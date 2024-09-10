@@ -7,7 +7,7 @@ phases:
   pre_build:  
     commands:
       # run 'npm install' using versions 
-      - npm ci
+      - npm install
   build:
     commands:
       - npm run build
