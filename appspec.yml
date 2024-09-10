@@ -13,6 +13,10 @@ permissions:
   group: ec2-user
 
 hooks:
+  AfterInstall:
+    - location: after-install.sh
+      timeout: 300
+      runas: ec2-user
   ApplicationStart:
     #start the application
     - location: start-service.sh

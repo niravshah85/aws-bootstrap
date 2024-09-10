@@ -11,6 +11,11 @@ AWS_ACCOUNT_ID=`aws sts get-caller-identity --profile awsbootstrap \
 
 CODEPIPELINE_BUCKET="$STACK_NAME-$REGION-codepipeline-$AWS_ACCOUNT_ID"
 
+GH_ACCESS_TOKEN=$(cat ~/dev/.github/aws-bootstrap-access-token)
+GH_OWNER=$(cat ~/dev/.github/aws-bootstrap-owner)
+GH_REPO=$(cat ~/dev/.github/aws-bootstrap-repo)
+GH_BRANCH=master
+
 #Deploy static resources
 echo -e "\n\n=========== Deploying setup.yml ===========\n"
 
@@ -37,11 +42,17 @@ aws cloudformation deploy \
     --no-fail-on-empty-changeset \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides \
-    EC2InstanceType=$EC2_INSTANCE_TYPE
+    EC2InstanceType=$EC2_INSTANCE_TYPE \
+    GitHubOwner=$GH_OWNER \
+    GitHubRepo=$GH_REPO \
+    GitHubBranch=$GH_BRANCH \
+    GitHubPersonalAccessToken=$GH_ACCESS_TOKEN \
+    CodePipelineBucket=$CODEPIPELINE_BUCKET
+
 
 # If the deploy succeeded, show the DNS name of the created instance
 if [ $? -eq 0 ]; then
   aws cloudformation list-exports \
     --profile awsbootstrap \
-    --query "Exports[?Name=='InstanceDNS'].Value"
+    --query "Exports[?Name=='InstanceEndpoint'].Value"
 fi
