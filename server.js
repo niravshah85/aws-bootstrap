@@ -1,7 +1,7 @@
 const { hostname } = require("os");
 const http = require("http");
 
-const message = "Hello world\n";
+const message = "Hello cloud\n";
 const port = 8080;
 
 const server = http.createServer((req, res) => {
