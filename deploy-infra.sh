@@ -39,6 +39,7 @@ aws cloudformation deploy \
     --profile $CLI_PROFILE \
     --stack-name $STACK_NAME \
     --template-file main.yml \
+    --disable-rollback \
     --no-fail-on-empty-changeset \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides \
@@ -54,5 +55,5 @@ aws cloudformation deploy \
 if [ $? -eq 0 ]; then
   aws cloudformation list-exports \
     --profile awsbootstrap \
-    --query "Exports[?Name=='InstanceEndpoint'].Value"
+    --query "Exports[?starts_with(Name,'InstanceEndpoint')].Value"
 fi
