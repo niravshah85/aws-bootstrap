@@ -34,6 +34,8 @@ aws cloudformation deploy \
 
 echo -e "\n\n=========== Deploying main.yml ===========\n"
 
+#--disable-rollback \
+
 aws cloudformation deploy \
     --region $REGION \
     --profile $CLI_PROFILE \
@@ -56,4 +58,9 @@ if [ $? -eq 0 ]; then
   aws cloudformation list-exports \
     --profile awsbootstrap \
     --query "Exports[?starts_with(Name,'InstanceEndpoint')].Value"
+
+  aws cloudformation list-exports \
+    --profile awsbootstrap \
+    --query "Exports[?starts_with(Name,'LBEndpoint')].Value"
+  # starts_with is not necessary right now, but will be useful when we get to the Production section
 fi
