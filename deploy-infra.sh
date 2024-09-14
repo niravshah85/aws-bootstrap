@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DOMAIN=travelguy.life
+
 STACK_NAME=awsbootstrap
 REGION=us-east-2
 CLI_PROFILE=awsbootstrap
@@ -69,7 +71,8 @@ aws cloudformation deploy \
     GitHubRepo=$GH_REPO \
     GitHubBranch=$GH_BRANCH \
     GitHubPersonalAccessToken=$GH_ACCESS_TOKEN \
-    CodePipelineBucket=$CODEPIPELINE_BUCKET
+    CodePipelineBucket=$CODEPIPELINE_BUCKET \
+    Domain=$DOMAIN
 
 
 # If the deploy succeeded, show the DNS name of the endpoints

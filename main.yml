@@ -21,6 +21,8 @@ Parameters:
   CodePipelineBucket:
     Type: String
     Description: 'The S3 bucket for CodePipeline artifacts'
+  Domain:
+    Type: String
 
 Resources:
 
@@ -173,6 +175,8 @@ Resources:
       Parameters:
         EC2InstanceType: !Ref EC2InstanceType
         EC2AMI: !Ref EC2AMI
+        Domain: !Ref Domain
+        SubDomain: staging
 
 
   Prod:
@@ -184,6 +188,8 @@ Resources:
       Parameters:
         EC2InstanceType: !Ref EC2InstanceType
         EC2AMI: !Ref EC2AMI
+        Domain: !Ref Domain
+        SubDomain: prod
 
 Outputs:  
   StagingLBEndpoint:
