@@ -26,7 +26,7 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
         res.end(message);
     });
 
-    server.listen(port, hostname, () => {
+    server.listen(httpsport, hostname, () => {
         console.log(`server running at http://${hostname()}:${httpsport}/`)
     });
 }
