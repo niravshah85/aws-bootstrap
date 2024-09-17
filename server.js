@@ -6,7 +6,7 @@ const fs = require("fs");
 const STACK_NAME = process.env.STACK_NAME || "Unknown Stack";
 const port = 8080;
 const httpsport = 8443;
-const httpsKey = "../keys/key.pm";
+const httpsKey = "../keys/key.pem";
 const httpsCert = "../keys/cert.pem";
 
 if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
