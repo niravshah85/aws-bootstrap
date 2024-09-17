@@ -6,6 +6,9 @@ STACK_NAME=awsbootstrap
 REGION=us-east-2
 CLI_PROFILE=awsbootstrap
 
+CERT=`aws acm list-certificates --region $REGION --profile $CLI_PROFILE --output text \
+        --query "CertificateSummaryList[?DomainName=='$DOMAIN'].CertificateArn | [0]"`
+
 EC2_INSTANCE_TYPE=t2.micro
 
 AWS_ACCOUNT_ID=`aws sts get-caller-identity --profile awsbootstrap \
@@ -72,7 +75,8 @@ aws cloudformation deploy \
     GitHubBranch=$GH_BRANCH \
     GitHubPersonalAccessToken=$GH_ACCESS_TOKEN \
     CodePipelineBucket=$CODEPIPELINE_BUCKET \
-    Domain=$DOMAIN
+    Domain=$DOMAIN \
+    Certificate=$CERT
 
 
 # If the deploy succeeded, show the DNS name of the endpoints

@@ -9,6 +9,8 @@ Parameters:
     Type: String
   SubDomain:
     Type: String
+  Certificate:
+    Type: String
 
 Resources:
   SecurityGroup:
@@ -25,6 +27,14 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8443
+          ToPort: 8443
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 22
@@ -123,6 +133,13 @@ Resources:
 
               # Create log directory
               mkdir -p /home/ec2-user/app/logs
+
+              # Create a self-signed TLS certificate to communicate with the load balancer
+              mkdir -p /home/ec2-user/app/keys
+              cd /home/ec2-user/app/keys
+              openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+                          -subj "/C=/ST=/L=/O=/CN=localhost" -keyout key.pem -out cert.pem
+
             EOF
 
             chown ec2-user:ec2-user /tmp/install_script.sh && chmod a+x /tmp/install_script.sh
@@ -258,6 +275,32 @@ Resources:
         - Key: Name
           Value: !Ref AWS::StackName
 
+  HTTPSLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref HTTPSLoadBalancerTargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Certificates:
+        - CertificateArn: !Ref Certificate
+      Port: 443
+      Protocol: HTTPS
+
+
+  HTTPSLoadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: instance
+      Port: 8443
+      Protocol: HTTPS
+      VpcId: !Ref VPC 
+      HealthCheckEnabled: true
+      HealthCheckProtocol: HTTPS
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
   ScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     UpdatePolicy:
@@ -271,7 +314,7 @@ Resources:
           - ReplaceUnhealthy
           - AZRebalance
           - AlarmNotification
-          - ScheduedActions
+          - ScheduledActions
     Properties:
       AutoScalingGroupName: !Sub 'ASG_${AWS::StackName}'
       AvailabilityZones:
@@ -286,6 +329,7 @@ Resources:
         Version: !GetAtt InstanceLaunchTemplate.LatestVersionNumber
       TargetGroupARNs:
         - !Ref LoadBalancerTargetGroup
+        - !Ref HTTPSLoadBalancerTargetGroup
       MetricsCollection:
         - Granularity: "1Minute"
           Metrics: 
@@ -314,6 +358,9 @@ Outputs:
   LBEndpoint:
     Description: The DNS name for the Loadbalancer
     Value: !Sub "http://${DNS}"
+  HTTPSEndpoint:
+    Description: The DNS name for the Loadbalancer
+    Value: !Sub "https://${DNS}"
   ScalingGroup:
     Description: The ScalingGroup for this stage
     Value: !Ref ScalingGroup
