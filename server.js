@@ -11,7 +11,7 @@ const httpsCert = "../keys/cert.pem";
 
 if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
 
-    console.log("Starting https server");
+    console.log("==Starting https server==");
 
     const message = `Hello HTTPS world from ${hostname()} in ${STACK_NAME}\n`;
     
@@ -31,7 +31,7 @@ if (fs.existsSync(httpsKey) && fs.existsSync(httpsCert)) {
     });
 }
 
-console.log("Starting https server");
+console.log("==Starting http server==");
 const message = `Hello world from ${hostname()} in ${STACK_NAME}\n`;
 const server = http.createServer((req, res) => {
     res.statusCode = 200;
