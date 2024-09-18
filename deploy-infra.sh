@@ -65,7 +65,6 @@ aws cloudformation deploy \
     --profile $CLI_PROFILE \
     --stack-name $STACK_NAME \
     --template-file ./cfn_output/main.yml \
-    --disable-rollback \
     --no-fail-on-empty-changeset \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides \
